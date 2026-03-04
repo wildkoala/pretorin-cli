@@ -126,8 +126,62 @@ jobs:
       - name: Authenticate to MCP Registry
         run: ./mcp-publisher login github-oidc
 
+      - name: Sync MCP package version with release tag
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          release_tag = os.environ["RELEASE_TAG"]
+          release_version = release_tag[1:] if release_tag.startswith("v") else release_tag
+          path = Path("server.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+
+          data["version"] = release_version
+          for pkg in data.get("packages", []):
+              if pkg.get("registryType") == "pypi":
+                  pkg["version"] = release_version
+
+          path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+          print(f"Updated server.json package version to {release_version}")
+          PY
+
       - name: Validate server.json
         run: ./mcp-publisher validate
 
-      - name: Publish to MCP Registry
-        run: ./mcp-publisher publish
+      - name: Publish to MCP Registry (retry on PyPI propagation)
+        run: |
+          set -euo pipefail
+
+          max_attempts=10
+          retry_delay_seconds=30
+
+          for attempt in $(seq 1 "$max_attempts"); do
+            set +e
+            publish_output="$(./mcp-publisher publish 2>&1)"
+            publish_status=$?
+            set -e
+
+            echo "$publish_output"
+
+            if [[ "$publish_status" -eq 0 ]]; then
+              exit 0
+            fi
+
+            if ! echo "$publish_output" | grep -q "PyPI package 'pretorin' not found"; then
+              echo "::error::MCP publish failed with a non-retryable error."
+              exit "$publish_status"
+            fi
+
+            if [[ "$attempt" -eq "$max_attempts" ]]; then
+              echo "::error::MCP publish failed after ${max_attempts} attempts waiting for PyPI package availability."
+              exit "$publish_status"
+            fi
+
+            echo "MCP registry could not resolve PyPI package yet (attempt ${attempt}/${max_attempts}). Retrying in ${retry_delay_seconds}s..."
+            sleep "$retry_delay_seconds"
+          done
