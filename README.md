@@ -77,6 +77,8 @@ Key behavior:
 
 Use this flow when you already have an AI agent/tool and want Pretorin as an MCP capability provider.
 
+<img src="assets/Rome-bot_Basic-1.png" alt="Rome-bot" width="120" align="right">
+
 ### 1. Claude Code
 
 ```bash
