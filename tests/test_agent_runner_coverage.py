@@ -12,6 +12,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+import pretorin.agent.skills  # noqa: F401  — force into sys.modules before patch.dict
+import pretorin.agent.tools  # noqa: F401  — force into sys.modules before patch.dict
 from pretorin.agent.runner import ComplianceAgent
 
 
