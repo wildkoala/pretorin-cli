@@ -94,7 +94,7 @@ strict = true
 
 [[tool.mypy.overrides]]
 # MCP library doesn't have complete type stubs
-module = "pretorin.mcp.server"
+module = ["pretorin.mcp.server", "pretorin.mcp.resources"]
 disallow_untyped_decorators = false
 disallow_untyped_calls = false
 disable_error_code = ["arg-type"]
