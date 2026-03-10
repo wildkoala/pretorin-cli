@@ -70,9 +70,7 @@ def _validate_path(path: Path, *, label: str = "path") -> Path:
     try:
         resolved.relative_to(cwd)
     except ValueError:
-        raise typer.BadParameter(
-            f"{label} must be within the working directory ({cwd}), got: {resolved}"
-        )
+        raise typer.BadParameter(f"{label} must be within the working directory ({cwd}), got: {resolved}")
     return resolved
 
 

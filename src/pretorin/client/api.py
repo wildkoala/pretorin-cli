@@ -233,7 +233,11 @@ class PretorianClient:
                 if attempt < _MAX_RETRIES:
                     logger.warning(
                         "Connection failed: %s %s (attempt %d/%d), retrying in %.1fs",
-                        method, path, attempt + 1, _MAX_RETRIES + 1, backoff,
+                        method,
+                        path,
+                        attempt + 1,
+                        _MAX_RETRIES + 1,
+                        backoff,
                     )
                     await asyncio.sleep(backoff)
                     backoff *= _BACKOFF_MULTIPLIER
@@ -247,7 +251,11 @@ class PretorianClient:
                 if attempt < _MAX_RETRIES:
                     logger.warning(
                         "Request timeout: %s %s (attempt %d/%d), retrying in %.1fs",
-                        method, path, attempt + 1, _MAX_RETRIES + 1, backoff,
+                        method,
+                        path,
+                        attempt + 1,
+                        _MAX_RETRIES + 1,
+                        backoff,
                     )
                     await asyncio.sleep(backoff)
                     backoff *= _BACKOFF_MULTIPLIER
@@ -268,7 +276,12 @@ class PretorianClient:
                     if attempt < _MAX_RETRIES:
                         logger.warning(
                             "Transient HTTP %d on %s %s (attempt %d/%d), retrying in %.1fs",
-                            response.status_code, method, path, attempt + 1, _MAX_RETRIES + 1, backoff,
+                            response.status_code,
+                            method,
+                            path,
+                            attempt + 1,
+                            _MAX_RETRIES + 1,
+                            backoff,
                         )
                         await asyncio.sleep(backoff)
                         backoff *= _BACKOFF_MULTIPLIER
@@ -290,7 +303,11 @@ class PretorianClient:
                     if attempt < _MAX_RETRIES:
                         logger.warning(
                             "Rate limited (429) on %s %s (attempt %d/%d), retrying in %.1fs",
-                            method, path, attempt + 1, _MAX_RETRIES + 1, wait_time,
+                            method,
+                            path,
+                            attempt + 1,
+                            _MAX_RETRIES + 1,
+                            wait_time,
                         )
                         await asyncio.sleep(wait_time)
                         backoff *= _BACKOFF_MULTIPLIER

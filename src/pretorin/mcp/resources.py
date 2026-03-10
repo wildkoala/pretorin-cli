@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 from mcp.types import Resource
 
-from pretorin.mcp.analysis_prompts import (
+from pretorin.mcp.prompts import (
     format_control_analysis_prompt,
     get_artifact_schema,
     get_available_controls,
