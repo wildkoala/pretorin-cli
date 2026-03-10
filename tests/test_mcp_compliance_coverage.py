@@ -244,15 +244,22 @@ class TestHandleGetScope:
     async def test_success_returns_scope(self):
         from pretorin.client.models import ScopeResponse
 
-        scope = ScopeResponse(system_id="sys-1", scope_narrative="In scope: all production systems.")
+        scope = ScopeResponse(scope_status="complete", scope_narrative={"description": "In scope: all production systems."})
         client = _make_client(get_scope=scope)
         with patch(
             "pretorin.mcp.handlers.compliance.resolve_system_id",
             new=AsyncMock(return_value="sys-1"),
         ):
-            result = await handle_get_scope(client, {"system_id": "sys-1"})
+            result = await handle_get_scope(client, {"system_id": "sys-1", "framework_id": "nist-800-53-r5"})
         assert isinstance(result, list)
-        assert "sys-1" in _result_text(result)
+        assert "complete" in _result_text(result)
+
+    @pytest.mark.asyncio
+    async def test_missing_framework_id_returns_error(self):
+        client = _make_client()
+        result = await handle_get_scope(client, {"system_id": "sys-1"})
+        assert _is_error(result)
+        assert "Missing required" in _error_text(result)
 
     @pytest.mark.asyncio
     async def test_system_id_none_raises_client_error(self):
@@ -262,7 +269,7 @@ class TestHandleGetScope:
             new=AsyncMock(return_value=None),
         ):
             with pytest.raises(PretorianClientError, match="system_id is required"):
-                await handle_get_scope(client, {})
+                await handle_get_scope(client, {"system_id": "sys-1", "framework_id": "nist-800-53-r5"})
 
 
 # ---------------------------------------------------------------------------

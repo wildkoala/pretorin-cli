@@ -32,18 +32,18 @@ step() {
 
 pass() {
     echo -e "${GREEN}✓ $1 passed${RESET}"
-    ((passed++))
+    ((++passed))
 }
 
 fail() {
     echo -e "${RED}✗ $1 failed${RESET}"
-    ((failed++))
+    ((++failed))
     failures="${failures}\n  - $1"
 }
 
 skip() {
     echo -e "${YELLOW}⊘ $1 skipped${RESET}"
-    ((skipped++))
+    ((++skipped))
 }
 
 run_lint() {
@@ -68,7 +68,7 @@ run_audit() {
         skip "pip-audit"
         return
     fi
-    if pip-audit --strict 2>&1; then
+    if pip-audit --strict . 2>&1; then
         pass "pip-audit"
     else
         fail "pip-audit"

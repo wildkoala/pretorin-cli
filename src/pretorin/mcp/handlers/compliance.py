@@ -113,14 +113,18 @@ async def handle_get_control_context(
 async def handle_get_scope(
     client: PretorianClient,
     arguments: dict[str, Any],
-) -> list[TextContent]:
+) -> list[TextContent] | CallToolResult:
     """Handle the get_scope tool."""
     logger.debug("handle_get_scope called with %s", _safe_args(arguments))
+    err = require(arguments, "system_id", "framework_id")
+    if err:
+        return format_error(err)
     system_id = await resolve_system_id(client, arguments)
     if system_id is None:
         raise PretorianClientError("system_id is required")
     scope = await client.get_scope(
         system_id=system_id,
+        framework_id=arguments["framework_id"],
     )
     return format_json(scope.model_dump())
 

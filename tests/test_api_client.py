@@ -197,11 +197,9 @@ CONTROL_CONTEXT = {
 }
 
 SCOPE_RESPONSE = {
-    "system_id": "sys-001",
-    "scope_narrative": "This system manages user data.",
+    "scope_status": "complete",
+    "scope_narrative": {"description": "This system manages user data."},
     "excluded_controls": [],
-    "qa_responses": [],
-    "status": "complete",
 }
 
 EVIDENCE_BATCH_RESPONSE = {
@@ -1032,9 +1030,9 @@ class TestControlImplementationEndpoints:
             return httpx.Response(200, json=SCOPE_RESPONSE)
 
         client = _make_client(handler)
-        result = await client.get_scope("sys-001")
+        result = await client.get_scope("sys-001", "nist-800-53-r5")
         assert isinstance(result, ScopeResponse)
-        assert result.system_id == "sys-001"
+        assert result.scope_status == "complete"
 
 
 class TestControlNotesEndpoints:

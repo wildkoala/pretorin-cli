@@ -404,8 +404,12 @@ async def list_tools() -> list[Tool]:
                 "type": "object",
                 "properties": {
                     "system_id": system_id_property(),
+                    "framework_id": {
+                        "type": "string",
+                        "description": "The framework ID (e.g., nist-800-53-r5, fedramp-moderate, soc2)",
+                    },
                 },
-                "required": ["system_id"],
+                "required": ["system_id", "framework_id"],
             },
         ),
         Tool(
